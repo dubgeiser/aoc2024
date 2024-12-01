@@ -1,0 +1,17 @@
+#
+# @see http://editorconfig.org/
+#
+
+root = true
+
+[Makefile]
+indent_style = tab
+
+
+[*.{go,mod,work}]
+charset = utf-8
+end_of_line = lf
+indent_size = 4
+indent_style = tab
+insert_final_newline = true
+trim_trailing_whitespace = true
