@@ -4,7 +4,7 @@ import (
 	"aoc2024/lib/file"
 	"fmt"
 	"math"
-	"sort"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -14,19 +14,32 @@ type Solution struct {
 	l2 []int
 }
 
-func (s *Solution) Part1() {
+func (s *Solution) Part1() int {
 	total := 0
-	sort.Slice(s.l1, func(i, j int) bool {
-		return s.l1[i] < s.l1[j]
-	})
-	sort.Slice(s.l2, func(i, j int) bool {
-		return s.l2[i] < s.l2[j]
-	})
+	slices.Sort(s.l1)
+	slices.Sort(s.l2)
 	for i, v := range s.l1 {
 		total += int(math.Abs(float64(v - s.l2[i])))
 	}
-	fmt.Println()
-	fmt.Println(total)
+	return total
+}
+
+func count(l []int, n int) int {
+	total := 0
+	for _, v := range l {
+		if v == n {
+			total++
+		}
+	}
+	return total
+}
+
+func (s *Solution) Part2() int {
+	total := 0
+	for _, n := range s.l1 {
+		total += n * count(s.l2, n)
+	}
+	return total
 }
 
 func (s *Solution) ProcessLine(lineIndex int, line string) {
@@ -40,5 +53,7 @@ func (s *Solution) ProcessLine(lineIndex int, line string) {
 func main() {
 	s := &Solution{}
 	file.ReadLines("./input", s)
-	s.Part1()
+	fmt.Println()
+	fmt.Println("Part1:", s.Part1())
+	fmt.Println("Part2:", s.Part2())
 }
