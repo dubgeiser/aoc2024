@@ -1,7 +1,7 @@
 package main
 
 import (
-	"aoc2024/lib/file"
+	"aoc/lib/file"
 	"fmt"
 	"math"
 	"slices"
