@@ -28,7 +28,31 @@ func (s *Solution) Part1() int {
 
 func (s *Solution) Part2() int {
 	total := 0
+	var rr []int
+	for _, report := range s.reports {
+		ok := false
+		for i := 0; i < len(report); i++ {
+			rr = tolerate(report, i)
+			if isSafe(rr) {
+				ok = true
+			}
+		}
+		if ok {
+			total++
+		}
+	}
 	return total
+}
+
+func tolerate(report []int, iLevel int) []int {
+	var rr []int
+	for i, level := range report {
+		if i == iLevel {
+			continue
+		}
+		rr = append(rr, level)
+	}
+	return rr
 }
 
 const ASCENDING = 1
@@ -55,7 +79,7 @@ func isSafe(report []int) bool {
 		return false
 	}
 	prevLevel := report[0]
-	for i := 1; i<len(report); i++ {
+	for i := 1; i < len(report); i++ {
 		currLevel := report[i]
 		currOrder := determineOrder(prevLevel, currLevel)
 		if currOrder != order {
