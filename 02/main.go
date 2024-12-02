@@ -2,9 +2,9 @@ package main
 
 import (
 	"aoc/lib/file"
+	"aoc/lib/slice"
 	"fmt"
 	"math"
-	"strconv"
 	"strings"
 )
 
@@ -13,7 +13,7 @@ type Solution struct {
 }
 
 func (s *Solution) ProcessLine(i int, line string) {
-	s.reports = append(s.reports, toInts(line))
+	s.reports = append(s.reports, slice.Map(slice.Int, strings.Split(line, " ")))
 }
 
 func (s *Solution) Part1() int {
@@ -91,15 +91,6 @@ func isSafe(report []int) bool {
 		prevLevel = currLevel
 	}
 	return true
-}
-
-func toInts(line string) []int {
-	l := []int{}
-	for _, s := range strings.Split(line, " ") {
-		n, _ := strconv.Atoi(string(s))
-		l = append(l, n)
-	}
-	return l
 }
 
 func main() {
