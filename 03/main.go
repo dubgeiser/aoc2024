@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 var re = regexp.MustCompile(`mul\((\d+),(\d+)\)`)
+var re2 = regexp.MustCompile(`^mul\((\d+),(\d+)\)`)
 
 type Solution struct {
 	lines   []string
@@ -32,7 +34,28 @@ func (s *Solution) Part1() any {
 }
 
 func (s *Solution) Part2() any {
-	return 2
+	total := 0
+	input := strings.Join(s.lines, "")
+	enabled := true
+	for i := 0; i < len(input); i++ {
+		if strings.HasPrefix(input[i:], "do()") {
+			enabled = true
+		}
+		if strings.HasPrefix(input[i:], "don't()") {
+			enabled = false
+		}
+		if enabled {
+			ops := re2.FindAllStringSubmatch(input[i:], -1)
+			if len(ops) == 0 {
+				continue
+			}
+			op := ops[0]
+			n1, _ := strconv.Atoi(op[1])
+			n2, _ := strconv.Atoi(op[2])
+			total += n1 * n2
+		}
+	}
+	return total
 }
 
 func main() {
