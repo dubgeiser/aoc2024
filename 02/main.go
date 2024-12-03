@@ -5,6 +5,7 @@ import (
 	"aoc/lib/slice"
 	"fmt"
 	"math"
+	"slices"
 	"strings"
 )
 
@@ -28,69 +29,35 @@ func (s *Solution) Part1() int {
 
 func (s *Solution) Part2() int {
 	total := 0
-	var rr []int
-	for _, report := range s.reports {
-		ok := false
-		for i := 0; i < len(report); i++ {
-			rr = tolerate(report, i)
+	for _, r := range s.reports {
+		valid := false
+		for i := 0; i < len(r); i++ {
+			rr := slices.Concat(r[:i], r[i+1:])
 			if isSafe(rr) {
-				ok = true
+				valid = true
 			}
 		}
-		if ok {
+		if valid {
 			total++
 		}
 	}
 	return total
 }
 
-func tolerate(report []int, iLevel int) []int {
-	var rr []int
-	for i, level := range report {
-		if i == iLevel {
-			continue
-		}
-		rr = append(rr, level)
-	}
-	return rr
-}
-
-const ASCENDING = 1
-const DESCENDING = 2
-const EQUAL = 3
-
-func determineOrder(prev, next int) int {
-	if prev < next {
-		return ASCENDING
-	} else if prev > next {
-		return DESCENDING
-	} else {
-		return EQUAL
-	}
-}
-
 func distance(a, b int) int {
 	return int(math.Abs(float64(b - a)))
 }
 
-func isSafe(report []int) bool {
-	order := determineOrder(report[0], report[1])
-	if order == EQUAL {
-		return false
-	}
-	prevLevel := report[0]
-	for i := 1; i < len(report); i++ {
-		currLevel := report[i]
-		currOrder := determineOrder(prevLevel, currLevel)
-		if currOrder != order {
+func isSafe(r []int) bool {
+	for i := 1; i < len(r); i++ {
+		if distance(r[i-1], r[i]) < 1 || distance(r[i-1], r[i]) > 3 {
 			return false
 		}
-		if distance(prevLevel, currLevel) < 1 || distance(prevLevel, currLevel) > 3 {
-			return false
-		}
-		prevLevel = currLevel
 	}
-	return true
+	rs := slices.Sorted(slices.Values(r))
+	rr := slices.Clone(rs)
+	slices.Reverse(rr)
+	return slices.Equal(r, rs) || slices.Equal(r, rr)
 }
 
 func main() {
