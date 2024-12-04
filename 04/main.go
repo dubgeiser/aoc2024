@@ -1,12 +1,12 @@
 package main
 
 import (
-	"aoc/lib/grids"
+	"aoc/lib/grid"
 	"fmt"
 )
 
 type Solution struct {
-	G grids.ByteGrid
+	G grid.Grid
 }
 
 func (s *Solution) Part1() any {
@@ -93,7 +93,7 @@ func (s *Solution) Part2() any {
 
 func main() {
 	s := &Solution{}
-	s.G = grids.ByteGridFromFile("./input")
+	s.G = grid.FromFile("./input")
 	fmt.Println()
 	fmt.Println("Part1:", s.Part1())
 	fmt.Println("Part2:", s.Part2())
