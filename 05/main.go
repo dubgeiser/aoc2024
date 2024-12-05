@@ -38,23 +38,26 @@ func (s *Solution) ProcessLine(i int, line string) {
 	}
 }
 
-func (s *Solution) Part1() any {
-	result := 0
-	var valid bool
-	for _, u := range s.updates {
-		valid = true
-		for i, p1 := range u {
-			for j, p2 := range u {
-				// if we compare 2 pages where `p1` comes before `p2`
-				// and
-				// `p2` is in the list of pages that come _before_ `p1`
-				// we have an invalid page update.
-				if i < j && slices.Contains(s.before[p1], p2) {
-					valid = false
-				}
+func (s *Solution) isValid(u []int) bool {
+	valid := true
+	for i, p1 := range u {
+		for j, p2 := range u {
+			// if we compare 2 pages where `p1` comes before `p2`
+			// and
+			// `p2` is in the list of pages that come _before_ `p1`
+			// we have an invalid page update.
+			if i < j && slices.Contains(s.before[p1], p2) {
+				valid = false
 			}
 		}
-		if valid {
+	}
+	return valid
+}
+
+func (s *Solution) Part1() any {
+	result := 0
+	for _, u := range s.updates {
+		if s.isValid(u) {
 			result += u[len(u)/2]
 		}
 	}
@@ -63,6 +66,20 @@ func (s *Solution) Part1() any {
 
 func (s *Solution) Part2() any {
 	result := 0
+	for _, u := range s.updates {
+		if !s.isValid(u) {
+			us := slices.SortedFunc(slices.Values(u), func(p1, p2 int) int {
+				if slices.Contains(s.before[p1], p2) {
+					return -1
+				}
+				if slices.Contains(s.before[p2], p1) {
+					return 1
+				}
+				return 0
+			})
+			result += us[len(us)/2]
+		}
+	}
 	return result
 }
 
@@ -76,7 +93,6 @@ func newSolution() *Solution {
 func main() {
 	s := newSolution()
 	s.parseMode = MODE_RULES
-
 	n, err := file.ReadLines("./input", s)
 	if err != nil {
 		panic(err)
