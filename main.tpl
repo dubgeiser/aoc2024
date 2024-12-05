@@ -12,11 +12,13 @@ func (s *Solution) ProcessLine(i int, line string) {
 }
 
 func (s *Solution) Part1() any {
-	return "NOT IMPLEMENTED"
+	result := 0
+	return result
 }
 
 func (s *Solution) Part2() any {
-	return "NOT IMPLEMENTED"
+	result := 0
+	return result
 }
 
 func main() {
