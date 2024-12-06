@@ -41,7 +41,7 @@ func (s *Solution) Part1() any {
 		if !inBounds {
 			break
 		} else if s.g[rr][cc] == '#' {
-			di = (di+1)%4
+			di = (di + 1) % 4
 		} else {
 			r, c = rr, cc
 		}
@@ -51,6 +51,40 @@ func (s *Solution) Part1() any {
 
 func (s *Solution) Part2() any {
 	result := 0
+	visited := set.New[[3]int]()
+	R := len(s.g)
+	C := len(s.g[0])
+	// 0:up, 1:right, 2:down, 3:left
+	dirs := [][2]int{{-1, 0}, {0, 1}, {1, 0}, {0, -1}}
+	for i := 0; i < R; i++ {
+		for j := 0; j < C; j++ {
+			r, c := s.sr, s.sc
+			di := 0 // start facing up
+			visited.Clear()
+			for {
+				// If we've already visited this position in this direction,
+				// we have made a loop.
+				if visited.Has([3]int{r, c, di}) {
+					result++
+					break
+				}
+				visited.Add([3]int{r, c, di})
+				rr := r + dirs[di][0]
+				cc := c + dirs[di][1]
+				inBounds := rr >= 0 && rr < R && cc >= 0 && cc < C
+				if !inBounds {
+					break
+				}
+				// If we hit an existing obstacle (or the one we're testing for
+				// right now, change direction)
+				if s.g[rr][cc] == '#' || rr == i && cc == j {
+					di = (di + 1) % 4
+				} else {
+					r, c = rr, cc
+				}
+			}
+		}
+	}
 	return result
 }
 
