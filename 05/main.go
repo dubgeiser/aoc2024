@@ -23,10 +23,7 @@ func (s *Solution) ProcessLine(i int, line string) {
 		return
 	}
 	if s.parseMode == MODE_RULES {
-		pages := []int(slice.Map(slice.Int, strings.Split(line, "|")))
-		if len(pages) != 2 {
-			fmt.Println("Rule", pages, "has", len(pages), "pages")
-		}
+		pages := [2]int(slice.Map(slice.Int, strings.Split(line, "|")))
 		// map page to a list of pages that must come before it
 		s.before[pages[1]] = append(s.before[pages[1]], pages[0])
 	} else {
@@ -92,7 +89,6 @@ func newSolution() *Solution {
 
 func main() {
 	s := newSolution()
-	s.parseMode = MODE_RULES
 	n, err := file.ReadLines("./input", s)
 	if err != nil {
 		panic(err)
