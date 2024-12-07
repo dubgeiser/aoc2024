@@ -5,6 +5,7 @@ import (
 	"aoc/lib/slice"
 	"fmt"
 	"slices"
+	"strconv"
 	"strings"
 )
 
@@ -23,29 +24,40 @@ func (s *Solution) ProcessLine(i int, line string) {
 func (s *Solution) Part1() any {
 	result := 0
 	for _, q := range s.q {
-		if Equates(q[0], q[1:]) {
+		if Equates(q[0], q[1:], false) {
 			result += q[0]
 		}
 	}
 	return result
 }
 
-func Equates(r int, n []int) bool {
+func Equates(r int, n []int, useConcat bool) bool {
 	// End recursion, we have consumed all elements, check the end result
 	if len(n) == 1 {
 		return r == n[0]
 	}
-	if Equates(r, slices.Concat([]int{n[0] + n[1]}, n[2:])) {
+	if Equates(r, slices.Concat([]int{n[0] + n[1]}, n[2:]), useConcat) {
 		return true
-	} else if Equates(r, slices.Concat([]int{n[0] * n[1]}, n[2:])) {
-		return true
-	} else {
-		return false
 	}
+	if Equates(r, slices.Concat([]int{n[0] * n[1]}, n[2:]), useConcat) {
+		return true
+	}
+	if useConcat {
+		c, _ := strconv.Atoi(strconv.Itoa(n[0]) + strconv.Itoa(n[1]))
+		if Equates(r, slices.Concat([]int{c}, n[2:]), useConcat) {
+			return true
+		}
+	}
+	return false
 }
 
 func (s *Solution) Part2() any {
 	result := 0
+	for _, q := range s.q {
+		if Equates(q[0], q[1:], true) {
+			result += q[0]
+		}
+	}
 	return result
 }
 
