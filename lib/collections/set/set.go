@@ -31,6 +31,10 @@ func (s *Set[T]) Has(v T) bool {
 	return ok
 }
 
+func (s *Set[T]) All() map[T]struct{} {
+	return s.items
+}
+
 func (s *Set[T]) Intersection(s2 *Set[T]) *Set[T] {
 	intersection := New[T]()
 	for e := range s.items {
