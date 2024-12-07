@@ -11,12 +11,7 @@ type Solution struct {
 func (s *Solution) ProcessLine(i int, line string) {
 }
 
-func (s *Solution) Part1() any {
-	result := 0
-	return result
-}
-
-func (s *Solution) Part2() any {
+func (s *Solution) Solve() any {
 	result := 0
 	return result
 }
@@ -28,6 +23,5 @@ func main() {
 		panic(err)
 	}
 	fmt.Println()
-	fmt.Println("Part1:", s.Part1())
-	fmt.Println("Part2:", s.Part2())
+	fmt.Println(s.Solve())
 }
