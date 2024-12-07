@@ -59,14 +59,14 @@ func (s *Solution) Part2() any {
 	dirs := [][2]int{{-1, 0}, {0, 1}, {1, 0}, {0, -1}}
 	// We only need to check obstacles placed on the positions the guard can
 	// possibly occupy.
-	for o := range s.visited.All() {
+	for o := range s.visited.Values() {
 		visited.Clear()
 		r, c := s.sr, s.sc
 		di := 0 // start facing up
 		for {
 			// If we've already visited this position in this direction,
 			// we have made a loop.
-			if visited.Has([3]int{r, c, di}) {
+			if visited.Contains([3]int{r, c, di}) {
 				result++
 				break
 			}
