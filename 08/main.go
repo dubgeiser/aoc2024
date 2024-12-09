@@ -13,6 +13,7 @@ type Solution struct {
 
 func (s *Solution) Solve() any {
 	antinodes := set.New[[2]int]()
+	antinodes2 := set.New[[2]int]()
 	s.MapAntennas()
 	R := len(s.g)
 	C := len(s.g[0])
@@ -33,10 +34,27 @@ func (s *Solution) Solve() any {
 				if rr2 >= 0 && rr2 < R && cc2 >= 0 && cc2 < C {
 					antinodes.Add([2]int{rr2, cc2})
 				}
+
+				dr := r2 - r1
+				dc := c2 - c1
+				r := r1
+				c := c1
+				for r >= 0 && r < R && c >= 0 && c < C {
+					antinodes2.Add([2]int{r, c})
+					r += dr
+					c += dc
+				}
+				r = r2
+				c = c2
+				for r >= 0 && r < R && c >= 0 && c < C {
+					antinodes2.Add([2]int{r, c})
+					r -= dr
+					c -= dc
+				}
 			}
 		}
 	}
-	return antinodes.Len()
+	return [2]int{antinodes.Len(), antinodes2.Len()}
 }
 
 func (s *Solution) MapAntennas() {
