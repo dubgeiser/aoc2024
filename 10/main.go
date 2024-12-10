@@ -32,6 +32,7 @@ func (s *Solution) Solve() any {
 	p2 := 0
 	for p := range slices.Values(s.trailHeads) {
 		p1 += CountUniqueEnds(s.g, p[0], p[1])
+		p2 += CountUniquePaths(s.g, p[0], p[1])
 	}
 	return [2]int{p1, p2}
 }
@@ -62,6 +63,27 @@ func CountUniqueEnds(g [][]int, r, c int) int {
 	return ends.Len()
 }
 
+func CountUniquePaths(g [][]int, r, c int) int {
+	paths := [][][2]int{}
+	var path [][2]int
+	q := [][3]int{{r, c, g[r][c]}}
+	path = append(path, [2]int{r, c})
+	for len(q) > 0 {
+		curr := q[0]
+		q = q[1:]
+		if curr[2] == 9 {
+			if !Contains(paths, path) {
+				paths = append(paths, path)
+			}
+		}
+		for adj:=range slices.Values(Adjacents(g, curr[0], curr[1])) {
+			q = append(q, adj)
+		}
+		path = append(path, [2]int{curr[0], curr[1]})
+	}
+	return len(paths)
+}
+
 var dirs = [][2]int{{0, -1}, {0, 1}, {1, 0}, {-1, 0}}
 
 func Adjacents(g [][]int, r, c int) [][3]int {
@@ -78,6 +100,17 @@ func Adjacents(g [][]int, r, c int) [][3]int {
 		}
 	}
 	return adj
+}
+
+// Can't use a set.Set, becaue [][][2]int does not implement Comparable
+// ... or I did not read the compiler's error message
+func Contains(paths [][][2]int, path [][2]int) bool {
+	for p := range slices.Values(paths) {
+		if slices.Equal(p, path) {
+			return true
+		}
+	}
+	return false
 }
 
 func main() {
