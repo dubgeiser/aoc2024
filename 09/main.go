@@ -10,11 +10,19 @@ import (
 const FREE int = -1
 
 type Solution struct {
-	disk []int
+	disk      []int
+	maxFileId int
+
+	// {{pos, size}, ...}
+	free [][2]int
+
+	// {fileId: {pos, size}, ...}
+	id2pos map[int][2]int
 }
 
 func (s *Solution) ProcessLine(i int, line string) {
 	s.disk = make([]int, 0)
+	s.id2pos = make(map[int][2]int)
 	fileId := 0
 	for i := 0; i < len(line); i++ {
 		n, _ := strconv.Atoi(string(line[i]))
@@ -23,14 +31,18 @@ func (s *Solution) ProcessLine(i int, line string) {
 			for j := 0; j < len(blocks); j++ {
 				blocks[j] = fileId
 			}
+			s.id2pos[fileId] = [2]int{len(s.disk), len(blocks)}
 			s.disk = slices.Concat(s.disk, blocks)
 			fileId++
 		} else {
+			// {posInDisk, noBlocks}, ie. {len(disk), len(blocks)}
+			s.free = append(s.free, [2]int{len(s.disk), len(blocks)})
 			for j := 0; j < len(blocks); j++ {
 				blocks[j] = FREE
 			}
 			s.disk = slices.Concat(s.disk, blocks)
 		}
+		s.maxFileId = fileId - 1
 	}
 }
 
@@ -54,11 +66,64 @@ func (s *Solution) Solve() any {
 			dfrag = dfrag[:len(dfrag)-1]
 		}
 	}
-	checksum := 0
-	for i, d := range dfrag {
-		checksum += i * d
+	p1 := CheckSum(dfrag)
+
+	// part 2
+	dfrag = slices.Clone(s.disk)
+	id := s.maxFileId
+	for id > 0 {
+		for dfrag[len(dfrag)-1] == FREE {
+			dfrag = dfrag[:len(dfrag)-1]
+		}
+		iFile := s.id2pos[id][0]
+		nFile := s.id2pos[id][1]
+		for i := 0; i < len(s.free); i++ {
+			// pr(dfrag)
+			iFree := s.free[i][0]
+			nFree := s.free[i][1]
+			if iFree >= iFile {
+				s.free = s.free[:i]
+				break
+			}
+			if nFree >= nFile {
+				for n := 0; n < nFile; n++ {
+					dfrag[n+iFree] = dfrag[n+iFile]
+					dfrag[n+iFile] = FREE
+				}
+				if nFree == nFile {
+					s.free = slices.Delete(s.free, i, i+1)
+				} else {
+					s.free[i] = [2]int{iFree + nFile, nFree - nFile}
+				}
+				break
+			}
+		}
+		id--
 	}
-	return [2]int{checksum, 0}
+	p2 := CheckSum(dfrag)
+	return [2]int{p1, p2}
+}
+
+func CheckSum(disk []int) int {
+	checksum := 0
+	for i, id := range disk {
+		if id == FREE {
+			continue
+		}
+		checksum += i * id
+	}
+	return checksum
+}
+
+func pr(disk []int) {
+	for id := range slices.Values(disk) {
+		c := strconv.Itoa(id)
+		if id == FREE {
+			c = "."
+		}
+		fmt.Print(c)
+	}
+	fmt.Println()
 }
 
 func main() {

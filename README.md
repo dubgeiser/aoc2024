@@ -21,5 +21,10 @@ tv, _ := types.Eval(fs, nil, token.NoPos, "(1+4) * 5")
 fmt.Print(tv.Value.String())
 ```
 
+## Day 9
+I most definitely got bitten by the "modify array up the wazoo vs. use some well chosen counters because I followed the puzzle question too literally".
+
+Once I saw the map { id: {pos, size}, ...} I got the strong feeling that we could build up the necessary data much easier...
+
 
 <!-- vim: set spell: -->
