@@ -26,5 +26,10 @@ I most definitely got bitten by the "modify array up the wazoo vs. use some well
 
 Once I saw the map { id: {pos, size}, ...} I got the strong feeling that we could build up the necessary data much easier...
 
+## Day 11
+Part 2: aha moment of caching results (think there was a similar thing in previous years)
+
+TODO: Does Go support memoization (cf. Python's @functools.cache decorator)?
+
 
 <!-- vim: set spell: -->
