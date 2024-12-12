@@ -2,6 +2,7 @@ package grid
 
 import (
 	"aoc/lib/file"
+	"fmt"
 )
 
 type Grid [][]byte
@@ -18,4 +19,13 @@ func FromFile(fn string) Grid {
 	b := &GridBuilder{}
 	file.ReadLines(fn, b)
 	return b.g
+}
+
+func Print(g Grid) {
+	for _, row := range g {
+		for _, c := range row {
+			fmt.Printf("%s", string(c))
+		}
+		fmt.Println()
+	}
 }
