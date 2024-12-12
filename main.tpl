@@ -12,8 +12,9 @@ func (s *Solution) ProcessLine(i int, line string) {
 }
 
 func (s *Solution) Solve() any {
-	result := 0
-	return result
+	p1 := 0
+	p2 := 0
+	return [2]int{p1, p2}
 }
 
 func main() {
