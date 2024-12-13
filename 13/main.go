@@ -77,6 +77,17 @@ func (s *Solution) Solve() any {
 			p1 += int(na*3 + nb)
 		}
 	}
+
+	for _, g := range s.games {
+		ax, ay, bx, by, px, py := g[0][0], g[0][1], g[1][0], g[1][1], g[2][0], g[2][1]
+		px += 10000000000000
+		py += 10000000000000
+		na := float64(by*px-bx*py) / float64(ax*by-ay*bx)
+		nb := float64(ay*px-ax*py) / float64(ay*bx-ax*by)
+		if math.Trunc(na) == na && math.Trunc(nb) == nb && na >= 0 && nb >= 0 {
+			p2 += int(na*3 + nb)
+		}
+	}
 	return [2]int{p1, p2}
 }
 
