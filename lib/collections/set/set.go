@@ -5,8 +5,11 @@ type Set[T comparable] struct {
 	items map[T]struct{}
 }
 
-func New[T comparable]() *Set[T] {
+func New[T comparable](elements...T) *Set[T] {
 	s := &Set[T]{make(map[T]struct{})}
+	for _, e := range elements {
+		s.Add(e)
+	}
 	return s
 }
 
