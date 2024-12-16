@@ -54,4 +54,14 @@ In the end I looked up a video about solving this and came across the "combinati
 
 Luckily, all this made part2 a breeze.
 
+
+## TODO
+### lib/grid
+Should be made more generic.
+
+Still questioning `[2]int` vs. `type Point struct{r,c int}` or `type Point [2]int`.
+Seems like a custom type might be better (encapsulation).
+Is a reference type preferable?
+
+
 <!-- vim: set spell: -->
