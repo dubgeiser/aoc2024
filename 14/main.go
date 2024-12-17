@@ -1,6 +1,7 @@
 package main
 
 import (
+	"aoc/lib/algo"
 	"aoc/lib/file"
 	"aoc/lib/slice"
 	"fmt"
@@ -17,14 +18,8 @@ func (s *Solution) ProcessLine(i int, line string) {
 	s.robots = append(s.robots, [4]int(slice.Map(slice.Int, re.FindAllString(line, -1))))
 }
 
-// This bit me sooo hard :-(
-// https://stackoverflow.com/questions/43018206/modulo-of-negative-integers-in-go
-func mod(a, b int) int {
-	return (a%b + b) % b
-}
-
 func endPosition(x, y, dx, dy, X, Y, t int) [2]int {
-	return [2]int{mod((x + t*dx), X), mod((y + t*dy), Y)}
+	return [2]int{algo.Mod((x + t*dx), X), algo.Mod((y + t*dy), Y)}
 }
 
 func (s *Solution) Solve(X, Y, t int) any {
