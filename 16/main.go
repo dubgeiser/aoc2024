@@ -1,6 +1,7 @@
 package main
 
 import (
+	"aoc/lib/algo"
 	"aoc/lib/collections/set"
 	"aoc/lib/grid"
 	"container/heap"
@@ -8,23 +9,31 @@ import (
 	"slices"
 )
 
-type Item struct {
+type Tile struct {
 	r, c  int
 	dir   [2]int
 	cost  int
 	index int
+	path  [][2]int
 }
 
-type VisitedItem struct {
+type VisitedTile struct {
 	r, c int
 	dir  [2]int
 }
 
-func (i *Item) convert() VisitedItem {
-	return VisitedItem{r: i.r, c: i.c, dir: i.dir}
+func (i *Tile) convert() VisitedTile {
+	return VisitedTile{r: i.r, c: i.c, dir: i.dir}
 }
 
-type PriorityQueue []*Item
+type PriorityQueue []*Tile
+
+func NewPq(i *Tile) *PriorityQueue {
+	pq := &PriorityQueue{}
+	heap.Init(pq)
+	heap.Push(pq, i)
+	return pq
+}
 
 func (pq PriorityQueue) Len() int {
 	return len(pq)
@@ -41,7 +50,7 @@ func (pq PriorityQueue) Swap(i, j int) {
 }
 
 func (pq *PriorityQueue) Push(x any) {
-	item := x.(*Item)
+	item := x.(*Tile)
 	item.index = len(*pq)
 	*pq = append(*pq, item)
 }
@@ -56,63 +65,70 @@ func (pq *PriorityQueue) Pop() any {
 	return item
 }
 
-func mod(a, b int) int {
-	return (a%b + b) % b
-}
-
 // Directions, ordered clockwise: NESW
+const N, E, S, W = 0, 1, 2, 3
+
 var DCW = [][2]int{{-1, 0}, {0, 1}, {1, 0}, {0, -1}}
 
-func Neighbours(g grid.Grid, i *Item) []*Item {
-	nbs := []*Item{}
+func Neighbours(g grid.Grid, i *Tile) []*Tile {
+	nbs := []*Tile{}
+	dcw := DCW[(algo.Mod(slices.Index(DCW, i.dir)+1, len(DCW)))]
+	dccw := DCW[(algo.Mod(slices.Index(DCW, i.dir)-1, len(DCW)))]
+	path := slices.Clone(i.path)
 
 	// Forward, apparently, you can't go out of bounds.
 	rr, cc := i.r+i.dir[0], i.c+i.dir[1]
 	if g[rr][cc] != '#' {
-		nbs = append(nbs, &Item{cost: i.cost + 1, r: rr, c: cc, dir: i.dir})
+		nbs = append(nbs, &Tile{
+			cost: i.cost + 1,
+			r:    rr,
+			c:    cc,
+			dir:  i.dir,
+			path: append(path, [2]int{i.r, i.c}),
+		})
 	}
 
 	// Turn clockwise and counter clockwise
-	dcw := DCW[(mod(slices.Index(DCW, i.dir)+1, len(DCW)))]
-	dccw := DCW[(mod(slices.Index(DCW, i.dir)-1, len(DCW)))]
-	nbs = append(nbs, &Item{cost: i.cost + 1000, r: i.r, c: i.c, dir: dcw})
-	nbs = append(nbs, &Item{cost: i.cost + 1000, r: i.r, c: i.c, dir: dccw})
+	nbs = append(nbs, &Tile{cost: i.cost + 1000, r: i.r, c: i.c, dir: dcw, path: path})
+	nbs = append(nbs, &Tile{cost: i.cost + 1000, r: i.r, c: i.c, dir: dccw, path: path})
 
 	return nbs
 }
 
-func main() {
-	part1 := 0
-	part2 := 0
-	g := grid.FromFile("./input")
+func GetStart(g grid.Grid, dir [2]int) *Tile {
 	R := len(g)
 	C := len(g[0])
-
-	// Determine start and endpoint
-	var sr, sc, er, ec int
+	sr, sc := -1, -1
+all:
 	for r := 0; r < R; r++ {
 		for c := 0; c < C; c++ {
 			if g[r][c] == 'S' {
 				sr = r
 				sc = c
-			}
-			if g[r][c] == 'E' {
-				er = r
-				ec = c
+				break all
 			}
 		}
 	}
+	i := &Tile{cost: 0, r: sr, c: sc, dir: dir, path: [][2]int{{}}}
+	return i
+}
 
-	visited := set.New[VisitedItem]()
-	start := &Item{cost: 0, r: sr, c: sc, dir: [2]int{0, 1}} // Facing East.
-	pq := &PriorityQueue{}
-	heap.Init(pq)
-	heap.Push(pq, start)
-	visited.Add(start.convert())
+func main() {
+	fmt.Println()
+	g := grid.FromFile("./input")
+
+	// Save for part 2.
+	cheapest := -1
+	start := GetStart(g, DCW[E])
+
+	// --[ Part 1 ]--
+	visited := set.New[VisitedTile]()
+	pq := NewPq(start)
 	for pq.Len() > 0 {
-		curr := heap.Pop(pq).(*Item)
-		if er == curr.r && ec == curr.c {
-			part1 = curr.cost
+		curr := heap.Pop(pq).(*Tile)
+		if g[curr.r][curr.c] == 'E' {
+			cheapest = curr.cost
+			fmt.Println(curr.cost)
 			break
 		}
 		visited.Add(curr.convert())
@@ -122,8 +138,30 @@ func main() {
 			}
 			heap.Push(pq, nb)
 		}
+
 	}
 
-	fmt.Println()
-	fmt.Println(part1, part2)
+	// --[ Part 2 ]--
+	pq = NewPq(start)
+	visited = set.New[VisitedTile]()
+	places := set.New([2]int{start.r, start.c})
+	for pq.Len() > 0 {
+		curr := heap.Pop(pq).(*Tile)
+		if curr.cost > cheapest {
+			continue
+		}
+		visited.Add(curr.convert())
+		if g[curr.r][curr.c] == 'E' && curr.cost == cheapest {
+			for _, place := range curr.path {
+				places.Add(place)
+			}
+		}
+		for _, nb := range Neighbours(g, curr) {
+			if visited.Contains(nb.convert()) {
+				continue
+			}
+			heap.Push(pq, nb)
+		}
+	}
+	fmt.Println(places.Len())
 }
