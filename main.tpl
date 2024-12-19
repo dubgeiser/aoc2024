@@ -11,18 +11,11 @@ type Solution struct {
 func (s *Solution) ProcessLine(i int, line string) {
 }
 
-func (s *Solution) Solve() any {
-	p1 := 0
-	p2 := 0
-	return [2]int{p1, p2}
-}
-
 func main() {
-	s := &Solution{}
-	_, err := file.ReadLines("./input", s)
-	if err != nil {
-		panic(err)
-	}
 	fmt.Println()
-	fmt.Println(s.Solve())
+	content, err := os.ReadFile("./input")
+	if err != nil {
+		panic("Cannot read input!")
+	}
+	lines := strings.Split(string(content), "\n")
 }
