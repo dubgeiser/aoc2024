@@ -3,7 +3,6 @@ package main
 import (
 	"aoc/lib/slice"
 	"fmt"
-	"math"
 	"os"
 	"regexp"
 	"strconv"
@@ -24,8 +23,13 @@ func (p *Program) Run() string {
 		opcode := p.ins[i]
 		operand := p.ins[i+1]
 		if opcode == ADV {
-			// TODO There's probably a bitwise op for this
-			p.A = int(float64(p.A) / math.Pow(2, float64(p.combo(operand))))
+			// From https://stackoverflow.com/questions/5801008/go-and-operators
+			//
+			//  So n << x is "n times 2, x times".
+			//  And y >> z is "y divided by 2, z times.
+			//
+			// => p.A / 2^combo(operand)
+			p.A = p.A >> p.combo(operand)
 		} else if opcode == BXL {
 			p.B = p.B ^ operand
 
@@ -41,9 +45,9 @@ func (p *Program) Run() string {
 		} else if opcode == OUT {
 			output = append(output, p.combo(operand)%8)
 		} else if opcode == BDV {
-			p.B = int(float64(p.A) / math.Pow(2, float64(p.combo(operand))))
+			p.B = p.A >> p.combo(operand)
 		} else if opcode == CDV {
-			p.C = int(float64(p.A) / math.Pow(2, float64(p.combo(operand))))
+			p.C = p.A >> p.combo(operand)
 		}
 		i += 2
 	}
