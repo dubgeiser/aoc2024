@@ -3,6 +3,7 @@ package file
 import (
 	"bufio"
 	"os"
+	"strings"
 )
 
 type LineProcessor interface {
@@ -24,4 +25,13 @@ func ReadLines(fn string, lp LineProcessor) (int, error) {
 		return 0, err
 	}
 	return i, nil
+}
+
+func ReadTwoParts(fn string) (string, string) {
+	bContent, err := os.ReadFile(fn)
+	if err != nil {
+		panic("Cannot read file!")
+	}
+	parts := strings.Split(string(bContent), "\n\n")
+	return strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1])
 }
