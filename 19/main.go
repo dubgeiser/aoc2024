@@ -31,10 +31,13 @@ func main() {
 	designs := strings.Split(d, "\n")
 	count := 0
 	cache := map[string]int{}
+	p2 := 0
 	for _, design := range designs {
-		if numCombinations(towels, design, cache) > 0 {
+		result := numCombinations(towels, design, cache)
+		if result > 0 {
 			count++
+			p2 += result
 		}
 	}
-	fmt.Println(count)
+	fmt.Println(count, p2)
 }
