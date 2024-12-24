@@ -3,6 +3,7 @@ package grid
 import (
 	"aoc/lib/file"
 	"fmt"
+	"strings"
 )
 
 type Grid [][]byte
@@ -54,10 +55,18 @@ func FromFile(fn string) Grid {
 	return b.g
 }
 
+func FromString(sg string) Grid {
+	g := [][]byte{}
+	for _, line := range strings.Split(sg, "\n") {
+		g = append(g, []byte(line))
+	}
+	return g
+}
+
 func Print(g Grid) {
 	for _, row := range g {
 		for _, c := range row {
-			fmt.Printf("%s", string(c))
+			fmt.Printf("%c", c)
 		}
 		fmt.Println()
 	}
