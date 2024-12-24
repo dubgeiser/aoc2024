@@ -63,5 +63,12 @@ Still questioning `[2]int` vs. `type Point struct{r,c int}` or `type Point [2]in
 Seems like a custom type might be better (encapsulation).
 Is a reference type preferable?
 
+### lib/file
+Should be going direction `lib/input` and have the func's for reading input.
+ATM `file.Read()` in combination with `Input()` seems a good start: It removes the filename from the compiled binary, so we can run the sanple- or input file against it as we see fit.
+Furthermore, it becomes easy in Vim to execute the program with any file, fi. by remapping `<Leader>t` on the fly or something along those lines...
+
+It could also hold often used constructs, ex. read a `[][]byte` grid, a list of integers, etc...
+
 
 <!-- vim: set spell: -->
