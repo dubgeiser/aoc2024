@@ -2,9 +2,17 @@ package file
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"strings"
 )
+
+func Input() string {
+	if len(os.Args) <= 1 {
+		return "input"
+	}
+	return os.Args[1]
+}
 
 type LineProcessor interface {
 	ProcessLine(i int, line string)
@@ -34,4 +42,13 @@ func ReadTwoParts(fn string) (string, string) {
 	}
 	parts := strings.Split(string(bContent), "\n\n")
 	return strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1])
+}
+
+func Read() string {
+	fn := Input()
+	content, err := os.ReadFile(fn)
+	if err != nil {
+		panic(fmt.Sprintf("Canot read [%s]", fn))
+	}
+	return strings.TrimSpace(string(content))
 }
