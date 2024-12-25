@@ -2,20 +2,25 @@ package main
 
 import (
 	"aoc/lib/file"
+	"aoc/lib/grid"
 	"fmt"
+	"os"
+	"strings"
 )
-
-type Solution struct {
-}
-
-func (s *Solution) ProcessLine(i int, line string) {
-}
 
 func main() {
 	fmt.Println()
-	content, err := os.ReadFile("./input")
+
+	for _, line := range strings.Split(file.Read(), "\n") {
+	}
+
+	g, R, C := grid.FromFile(file.Input())
+
+	top, bottom := file.ReadTwoParts(file.Input())
+
+	content, err := os.ReadFile(file.Input())
 	if err != nil {
 		panic("Cannot read input!")
 	}
-	lines := strings.Split(string(content), "\n")
+
 }
