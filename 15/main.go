@@ -25,7 +25,7 @@ findstart:
 
 func main() {
 	fmt.Println()
-	g_, m_ := file.ReadTwoParts("./input")
+	g_, m_ := file.ReadTwoParts(file.Input())
 	m := []byte(strings.Replace(m_, "\n", "", -1))
 	g := grid.FromString(g_)
 	R := len(g)
