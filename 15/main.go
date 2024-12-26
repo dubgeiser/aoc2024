@@ -8,7 +8,7 @@ import (
 )
 
 func findStart(g grid.Grid) (int, int) {
-	sr, sc := 0,0
+	sr, sc := 0, 0
 	R := len(g)
 	C := len(g[0])
 findstart:
@@ -42,7 +42,7 @@ func main() {
 	for i := 0; i < M; i++ {
 		// Collect positions of consecutive boxes, so we can move them all
 		// together, if possible.
-		consecutiveBoxes := [][2]int{{r, c}}
+		consecutiveBoxes := [][2]int{}
 		dr, dc := m2d[m[i]][0], m2d[m[i]][1]
 		rr, cc := r, c
 		move := true
@@ -69,7 +69,7 @@ func main() {
 		g[r][c] = '.'
 		g[r+dr][c+dc] = '@'
 		r, c = r+dr, c+dc
-		for i := 1; i < len(consecutiveBoxes); i++ {
+		for i := 0; i < len(consecutiveBoxes); i++ {
 			br, bc := consecutiveBoxes[i][0], consecutiveBoxes[i][1]
 			g[br+dr][bc+dc] = 'O'
 		}
