@@ -63,6 +63,12 @@ Still questioning `[2]int` vs. `type Point struct{r,c int}` or `type Point [2]in
 Seems like a custom type might be better (encapsulation).
 Is a reference type preferable?
 
+Going by day 22, part 2, I'm thinking that it would be nice if functions that return a new `grid.Grid` also return the number of rows and cols.
+We could then have a snippet `loopgrid` that inserts the usual `for r:=0;r<R;r++ { for c:=0;c<C;c++ {}}` construct.
+
+Maybe even have methods `Rows()` and `Cols()` like iterators that guarantee the order like the "loop grid" construction.
+However, ATM, it feels that this can get hairy quite easily: Do you make them return the tile or the indices, for instance.  Both can come in handy, but maybe the indices are more in line with KISS as they easily can be used to access the grid via `g[r][c]`.
+
 ### lib/file
 Should be going direction `lib/input` and have the func's for reading input.
 ATM `file.Read()` in combination with `Input()` seems a good start: It removes the filename from the compiled binary, so we can run the sanple- or input file against it as we see fit.
