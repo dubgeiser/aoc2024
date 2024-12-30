@@ -2,3 +2,4 @@ sample
 input
 !lib/input/
 main
+tmp/
