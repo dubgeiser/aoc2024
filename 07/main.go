@@ -1,35 +1,14 @@
 package main
 
 import (
-	"aoc/lib/file"
+	"aoc/lib/input"
 	"aoc/lib/slice"
+	"bufio"
 	"fmt"
 	"slices"
 	"strconv"
 	"strings"
 )
-
-type Solution struct {
-	// Using slice of slices instead of map, because I'm not sure if an equation
-	// result appears more than once.
-	q [][]int
-}
-
-func (s *Solution) ProcessLine(i int, line string) {
-	line = strings.Replace(line, ":", "", 1)
-	qs := strings.Split(line, " ")
-	s.q = append(s.q, slice.Map(slice.Int, qs))
-}
-
-func (s *Solution) Part1() any {
-	result := 0
-	for _, q := range s.q {
-		if Equates(q[0], q[1:], false) {
-			result += q[0]
-		}
-	}
-	return result
-}
 
 func Equates(r int, n []int, useConcat bool) bool {
 	// End recursion, we have consumed all elements, check the end result
@@ -51,23 +30,23 @@ func Equates(r int, n []int, useConcat bool) bool {
 	return false
 }
 
-func (s *Solution) Part2() any {
-	result := 0
-	for _, q := range s.q {
+func main() {
+	eqs := [][]int{}
+	input.Lines(func(s *bufio.Scanner) {
+		eqs = append(
+			eqs,
+			slice.Map(slice.Int, strings.Split(strings.Replace(s.Text(), ":", "", 1), " ")))
+	})
+
+	p1 := 0
+	p2 := 0
+	for _, q := range eqs {
+		if Equates(q[0], q[1:], false) {
+			p1 += q[0]
+		}
 		if Equates(q[0], q[1:], true) {
-			result += q[0]
+			p2 += q[0]
 		}
 	}
-	return result
-}
-
-func main() {
-	s := &Solution{}
-	_, err := file.ReadLines("./input", s)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println()
-	fmt.Println("Part1:", s.Part1())
-	fmt.Println("Part2:", s.Part2())
+	fmt.Println(p1, p2)
 }

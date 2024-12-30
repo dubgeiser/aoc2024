@@ -1,7 +1,8 @@
 package main
 
 import (
-	"aoc/lib/file"
+	"aoc/lib/input"
+	"bufio"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -11,31 +12,25 @@ import (
 var re = regexp.MustCompile(`mul\((\d+),(\d+)\)`)
 var re2 = regexp.MustCompile(`^mul\((\d+),(\d+)\)`)
 
-type Solution struct {
-	lines   []string
-	opLines [][][]string // [[[mul(x,y) x y], [mul(a,b) a b],...], ... ]
-}
+func main() {
+	lines := []string{}
+	opLines := [][][]string{} // [[[mul(x,y) x y], [mul(a,b) a b],...], ... ]
+	input.Lines(func(s *bufio.Scanner) {
+		lines = append(lines, s.Text())
+		opLines = append(opLines, re.FindAllStringSubmatch(s.Text(), -1))
+	})
 
-func (s *Solution) ProcessLine(i int, line string) {
-	s.lines = append(s.lines, line)
-	s.opLines = append(s.opLines, re.FindAllStringSubmatch(line, -1))
-}
-
-func (s *Solution) Part1() any {
-	total := 0
-	for _, l := range s.opLines {
+	p1 := 0
+	for _, l := range opLines {
 		for _, op := range l {
 			n1, _ := strconv.Atoi(op[1])
 			n2, _ := strconv.Atoi(op[2])
-			total += n1 * n2
+			p1 += n1 * n2
 		}
 	}
-	return total
-}
 
-func (s *Solution) Part2() any {
-	total := 0
-	input := strings.Join(s.lines, "")
+	p2 := 0
+	input := strings.Join(lines, "")
 	enabled := true
 	for i := 0; i < len(input); i++ {
 		if strings.HasPrefix(input[i:], "do()") {
@@ -52,19 +47,8 @@ func (s *Solution) Part2() any {
 			op := ops[0]
 			n1, _ := strconv.Atoi(op[1])
 			n2, _ := strconv.Atoi(op[2])
-			total += n1 * n2
+			p2 += n1 * n2
 		}
 	}
-	return total
-}
-
-func main() {
-	s := &Solution{}
-	_, err := file.ReadLines("./input", s)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println()
-	fmt.Println("Part1:", s.Part1())
-	fmt.Println("Part2:", s.Part2())
+	fmt.Println(p1, p2)
 }

@@ -1,20 +1,13 @@
 package main
 
 import (
-	"aoc/lib/file"
+	"aoc/lib/input"
+	"bufio"
 	"fmt"
 	"slices"
 	"strconv"
 	"strings"
 )
-
-type Solution struct {
-	stones []string
-}
-
-func (s *Solution) ProcessLine(i int, line string) {
-	s.stones = strings.Split(line, " ")
-}
 
 func Blink(stones []string) []string {
 	result := []string{}
@@ -75,26 +68,18 @@ func BlinkFasterJoeyTribiani(stone string, steps int, cache map[StoneCount]int) 
 	return result
 }
 
-func (s *Solution) Solve() any {
-	stones := slices.Clone(s.stones)
+func main() {
+	stones := []string{}
+	input.Lines(func(s *bufio.Scanner) { stones = strings.Split(s.Text(), " ") })
+	ss := slices.Clone(stones)
 	for i := 0; i < 25; i++ {
-		stones = Blink(stones)
+		ss = Blink(ss)
 	}
-	p1 := len(stones)
+	fmt.Println(len(ss))
 
 	p2 := 0
-	for stone := range slices.Values(s.stones) {
+	for stone := range slices.Values(stones) {
 		p2 += BlinkFasterJoeyTribiani(stone, 75, make(map[StoneCount]int))
 	}
-	return [2]int{p1, p2}
-}
-
-func main() {
-	s := &Solution{}
-	_, err := file.ReadLines("./input", s)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println()
-	fmt.Println(s.Solve())
+	fmt.Println(p2)
 }

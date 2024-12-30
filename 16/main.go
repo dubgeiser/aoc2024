@@ -4,6 +4,7 @@ import (
 	"aoc/lib/algo"
 	"aoc/lib/collections/set"
 	"aoc/lib/grid"
+	"aoc/lib/input"
 	"container/heap"
 	"fmt"
 	"slices"
@@ -115,7 +116,7 @@ all:
 
 func main() {
 	fmt.Println()
-	g := grid.FromFile("./input")
+	g, _, _ := input.Grid()
 
 	// Save for part 2.
 	cheapest := -1

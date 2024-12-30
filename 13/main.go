@@ -1,29 +1,14 @@
 package main
 
 import (
+	"aoc/lib/input"
 	"aoc/lib/slice"
 	"fmt"
 	"math"
-	"os"
 	"regexp"
-	"strings"
 )
 
-type Solution struct {
-	games [][3][2]int
-}
-
-func (s *Solution) ReadFile(fn string) {
-	re := regexp.MustCompile(`\d+`)
-	content, _ := os.ReadFile(fn)
-	for _, g := range strings.Split(string(content), "\n\n") {
-		d := slice.Map(slice.Int, re.FindAllString(g, -1))
-		s.games = append(s.games, [3][2]int{
-			{d[0], d[1]},  // button a
-			{d[2], d[3]},  // button b
-			{d[4], d[5]}}) // prize
-	}
-}
+var re = regexp.MustCompile(`\d+`)
 
 // a: button (ax, ay)
 // b: button (bx, by)
@@ -64,10 +49,20 @@ func (s *Solution) ReadFile(fn string) {
 // ----------------------------
 // ay*bx*nb - ax*by*nb = ay*px - ax*py
 // <=> nb := (ay*px - ax*py)/(ay*bx - ax*by)
-func (s *Solution) Solve() any {
+func main() {
+	games := [][3][2]int{}
+	input.Blocks(func(block string) {
+		d := slice.Map(slice.Int, re.FindAllString(block, -1))
+		fmt.Println(block)
+		games = append(games, [3][2]int{
+			{d[0], d[1]},  // button a
+			{d[2], d[3]},  // button b
+			{d[4], d[5]}}) // prize
+	})
+
 	p1 := 0
 	p2 := 0
-	for _, g := range s.games {
+	for _, g := range games {
 		ax, ay, bx, by, px, py := g[0][0], g[0][1], g[1][0], g[1][1], g[2][0], g[2][1]
 		na := float64(by*px-bx*py) / float64(ax*by-ay*bx)
 		nb := float64(ay*px-ax*py) / float64(ay*bx-ax*by)
@@ -76,24 +71,16 @@ func (s *Solution) Solve() any {
 		if math.Trunc(na) == na && math.Trunc(nb) == nb && na >= 0 && na <= 100 && nb >= 0 && nb <= 100 {
 			p1 += int(na*3 + nb)
 		}
-	}
 
-	for _, g := range s.games {
-		ax, ay, bx, by, px, py := g[0][0], g[0][1], g[1][0], g[1][1], g[2][0], g[2][1]
+		// part 2
 		px += 10000000000000
 		py += 10000000000000
-		na := float64(by*px-bx*py) / float64(ax*by-ay*bx)
-		nb := float64(ay*px-ax*py) / float64(ay*bx-ax*by)
+		na = float64(by*px-bx*py) / float64(ax*by-ay*bx)
+		nb = float64(ay*px-ax*py) / float64(ay*bx-ax*by)
 		if math.Trunc(na) == na && math.Trunc(nb) == nb && na >= 0 && nb >= 0 {
 			p2 += int(na*3 + nb)
 		}
 	}
-	return [2]int{p1, p2}
-}
-
-func main() {
-	s := &Solution{}
-	s.ReadFile("./input")
-	fmt.Println()
-	fmt.Println(s.Solve())
+	fmt.Println(35082, 82570698600470)
+	fmt.Println(p1, p2)
 }

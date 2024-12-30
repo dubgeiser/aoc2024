@@ -3,12 +3,9 @@ package main
 import (
 	"aoc/lib/collections/set"
 	"aoc/lib/grid"
+	"aoc/lib/input"
 	"fmt"
 )
-
-type Solution struct {
-	g grid.Grid
-}
 
 func min(a, b int) int {
 	if a < b {
@@ -24,52 +21,7 @@ func max(a, b int) int {
 	return b
 }
 
-func (s *Solution) Solve() any {
-	part1 := 0
-	part2 := 0
-	R := len(s.g)
-	C := len(s.g[0])
-	visited := set.New[[2]int]()
-	regions := []*set.Set[[2]int]{}
-	regionBounds := [][4]int{}
-	minr, minc, maxr, maxc := 0, 0, 0, 0
-	for r := 0; r < R; r++ {
-		for c := 0; c < C; c++ {
-			p := [2]int{r, c}
-			if visited.Contains(p) {
-				continue
-			}
-			visited.Add(p)
-			region := set.New(p)
-			minr = min(p[0], R-1)
-			minc = min(p[1], C-1)
-			maxr = max(p[0], 0)
-			maxc = max(p[1], 0)
-			q := [][2]int{}
-			q = append(q, p)
-			for len(q) > 0 {
-				pq := q[0]
-				q = q[1:]
-				for _, pp := range s.g.Neighbours(4, pq[0], pq[1], func(row, col int) bool {
-					return s.g[row][col] == s.g[r][c] && !region.Contains([2]int{row, col})
-				}) {
-					visited.Add(pp)
-					region.Add(pp)
-					q = append(q, pp)
-					minr, minc = min(minr, pp[0]), min(minc, pp[1])
-					maxr, maxc = max(maxr, pp[0]), max(maxc, pp[1])
-				}
-			}
-			regions = append(regions, region)
-			regionBounds = append(regionBounds, [4]int{minr, minc, maxr, maxc})
-		}
-	}
-	for ri, region := range regions {
-		part1 += region.Len() * perimeter(region, s.g)
-		part2 += region.Len() * sides(region, regionBounds[ri])
-	}
-	return [2]int{part1, part2}
-}
+
 
 func perimeter(r *set.Set[[2]int], g grid.Grid) int {
 	perimeter := 0
@@ -216,8 +168,48 @@ func sides(region *set.Set[[2]int], bounds [4]int) int {
 }
 
 func main() {
-	s := &Solution{}
-	s.g = grid.FromFile("./input")
-	fmt.Println()
-	fmt.Println(s.Solve())
+	g, R, C := input.Grid()
+	part1 := 0
+	part2 := 0
+	visited := set.New[[2]int]()
+	regions := []*set.Set[[2]int]{}
+	regionBounds := [][4]int{}
+	minr, minc, maxr, maxc := 0, 0, 0, 0
+	for r := 0; r < R; r++ {
+		for c := 0; c < C; c++ {
+			p := [2]int{r, c}
+			if visited.Contains(p) {
+				continue
+			}
+			visited.Add(p)
+			region := set.New(p)
+			minr = min(p[0], R-1)
+			minc = min(p[1], C-1)
+			maxr = max(p[0], 0)
+			maxc = max(p[1], 0)
+			q := [][2]int{}
+			q = append(q, p)
+			for len(q) > 0 {
+				pq := q[0]
+				q = q[1:]
+				for _, pp := range g.Neighbours(4, pq[0], pq[1], func(row, col int) bool {
+					return g[row][col] == g[r][c] && !region.Contains([2]int{row, col})
+				}) {
+					visited.Add(pp)
+					region.Add(pp)
+					q = append(q, pp)
+					minr, minc = min(minr, pp[0]), min(minc, pp[1])
+					maxr, maxc = max(maxr, pp[0]), max(maxc, pp[1])
+				}
+			}
+			regions = append(regions, region)
+			regionBounds = append(regionBounds, [4]int{minr, minc, maxr, maxc})
+		}
+	}
+	for ri, region := range regions {
+		part1 += region.Len() * perimeter(region, g)
+		part2 += region.Len() * sides(region, regionBounds[ri])
+	}
+	fmt.Println(part1)
+	fmt.Println(part2)
 }

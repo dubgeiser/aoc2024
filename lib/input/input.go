@@ -6,15 +6,19 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"slices"
+	"strings"
 )
 
-// Return the input as a slice of strings, for custom parsing.
-func Lines() []string {
-	lines := []string{}
-	ProcessLine(func(scanner *bufio.Scanner) {
-		lines = append(lines, scanner.Text())
-	})
-	return lines
+// Scan the input line per line, each time a new line is scanned, pass the
+// scanner to the line processor, so it can scan the current line as it see fit.
+func Lines(processor func(s *bufio.Scanner)) {
+	in := input()
+	defer in.Close()
+	scanner := bufio.NewScanner(in)
+	for scanner.Scan() {
+		processor(scanner)
+	}
 }
 
 // Return the input as a Grid and its size.
@@ -23,8 +27,8 @@ func Lines() []string {
 // of the grid and `C` will be the length of the first row in the grid.
 func Grid() (g grid.Grid, R, C int) {
 	g = grid.Grid{}
-	ProcessLine(func(scanner *bufio.Scanner) {
-		g = append(g, scanner.Bytes())
+	Lines(func(scanner *bufio.Scanner) {
+		g = append(g, slices.Clone(scanner.Bytes()))
 	})
 	R = len(g)
 	C = len(g[0])
@@ -36,7 +40,7 @@ func Grid() (g grid.Grid, R, C int) {
 // `p2`) to process both parts separately.
 func TwoParts(p1, p2 func(s *bufio.Scanner)) {
 	processor := p1
-	ProcessLine(func(scanner *bufio.Scanner) {
+	Lines(func(scanner *bufio.Scanner) {
 		if len(scanner.Bytes()) == 0 {
 			processor = p2
 			return
@@ -45,17 +49,34 @@ func TwoParts(p1, p2 func(s *bufio.Scanner)) {
 	})
 }
 
-// Scan the input line per line, each time a new line is scanned, pass the
-// scanner to the line processor, so it can scan the current line as it see fit.
-// It is assumed that `processor` does no altering operations on the scanner
-// itself.
-func ProcessLine(processor func(s *bufio.Scanner)) {
+// Blocks() reads input in blocks of multiple lines.
+// Each block is passed verbatim to the processor as a string.
+// Every line in a block will be separated by `"\n"`
+func Blocks(processor func(s string)) {
+	block := strings.Builder{}
+	Lines(func(sc *bufio.Scanner) {
+		if len(sc.Bytes()) == 0 {
+			processor(strings.TrimSpace(block.String()))
+			block.Reset()
+		} else {
+			block.WriteString(sc.Text())
+			block.WriteString("\n")
+		}
+	})
+	// Process last block
+	processor(strings.TrimSpace(block.String()))
+}
+
+// Return the input as one blob.
+// Trim any space pre- or succeeding the content.
+func Blob() string {
 	in := input()
 	defer in.Close()
-	scanner := bufio.NewScanner(in)
-	for scanner.Scan() {
-		processor(scanner)
+	raw, err := os.ReadFile(in.Name())
+	if err != nil {
+		panic(err)
 	}
+	return strings.TrimSpace(string(raw))
 }
 
 // Determine the input for a puzzle.

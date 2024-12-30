@@ -1,7 +1,8 @@
 package main
 
 import (
-	"aoc/lib/file"
+	"aoc/lib/input"
+	"bufio"
 	"fmt"
 	"maps"
 	"regexp"
@@ -26,22 +27,18 @@ func val(w string, wires map[string]int, exp map[string][3]string) int {
 }
 
 func main() {
-	fmt.Println()
-	sWires, sGates := file.ReadTwoParts("./input")
-
 	wires := map[string]int{}
-	for _, line := range strings.Split(sWires, "\n") {
-		w := strings.Split(line, ": ")
+	expr := map[string][3]string{}
+	input.TwoParts(func(s *bufio.Scanner) {
+		w := strings.Split(s.Text(), ": ")
 		d, _ := strconv.Atoi(w[1])
 		wires[w[0]] = d
-	}
-
-	expr := map[string][3]string{}
-	for _, line := range strings.Split(sGates, "\n") {
+	}, func(s *bufio.Scanner) {
 		//g -> x, OP, y, z
-		g := strings.Split(strings.Replace(line, " ->", "", 1), " ")
+		g := strings.Split(strings.Replace(s.Text(), " ->", "", 1), " ")
 		expr[g[3]] = [3]string{g[0], g[1], g[2]}
-	}
+	})
+
 	for w := range expr {
 		wires[w] = val(w, wires, expr)
 	}

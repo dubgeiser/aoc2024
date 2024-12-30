@@ -1,11 +1,11 @@
 package main
 
 import (
+	"aoc/lib/input"
+	"bufio"
 	"fmt"
 	"maps"
-	"os"
 	"strconv"
-	"strings"
 )
 
 func newSecret(n int) int {
@@ -15,16 +15,17 @@ func newSecret(n int) int {
 	return n
 }
 
+func Lines() []string {
+	lines := []string{}
+	input.Lines(func(s *bufio.Scanner) {lines = append(lines, s.Text())})
+	return lines
+}
+
 func main() {
 	fmt.Println()
-	raw, err := os.ReadFile("./input")
-	if err != nil {
-		panic("Cannot read input!")
-	}
-	lines := strings.Split(strings.TrimSpace(string(raw)), "\n")
 	part1 := 0
 	seq2totalScore := map[[4]int]int{}
-	for _, line := range lines {
+	for _, line := range Lines() {
 		n, _ := strconv.Atoi(line)
 		prices := []int{}
 		for i := 0; i < 2000; i++ {
@@ -54,6 +55,7 @@ func main() {
 		}
 	}
 	fmt.Println(part1)
+
 	max := 0
 	for s := range maps.Values(seq2totalScore) {
 		if s > max {

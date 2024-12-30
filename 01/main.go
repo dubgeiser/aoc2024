@@ -1,28 +1,14 @@
 package main
 
 import (
-	"aoc/lib/file"
+	"aoc/lib/input"
+	"bufio"
 	"fmt"
 	"math"
 	"slices"
 	"strconv"
 	"strings"
 )
-
-type Solution struct {
-	l1 []int
-	l2 []int
-}
-
-func (s *Solution) Part1() int {
-	total := 0
-	slices.Sort(s.l1)
-	slices.Sort(s.l2)
-	for i, v := range s.l1 {
-		total += int(math.Abs(float64(v - s.l2[i])))
-	}
-	return total
-}
 
 func count(l []int, n int) int {
 	total := 0
@@ -34,26 +20,25 @@ func count(l []int, n int) int {
 	return total
 }
 
-func (s *Solution) Part2() int {
-	total := 0
-	for _, n := range s.l1 {
-		total += n * count(s.l2, n)
-	}
-	return total
-}
-
-func (s *Solution) ProcessLine(lineIndex int, line string) {
-	sNumbers := strings.Split(line, "   ")
-	n1, _ := strconv.Atoi(sNumbers[0])
-	n2, _ := strconv.Atoi(sNumbers[1])
-	s.l1 = append(s.l1, n1)
-	s.l2 = append(s.l2, n2)
-}
-
 func main() {
-	s := &Solution{}
-	file.ReadLines("./input", s)
-	fmt.Println()
-	fmt.Println("Part1:", s.Part1())
-	fmt.Println("Part2:", s.Part2())
+	l1, l2 := []int{}, []int{}
+	input.Lines(func(s *bufio.Scanner) {
+		sNumbers := strings.Split(s.Text(), "   ")
+		n1, _ := strconv.Atoi(sNumbers[0])
+		n2, _ := strconv.Atoi(sNumbers[1])
+		l1 = append(l1, n1)
+		l2 = append(l2, n2)
+	})
+	slices.Sort(l1)
+	slices.Sort(l2)
+	p1 := 0
+	for i, v := range l1 {
+		p1 += int(math.Abs(float64(v - l2[i])))
+	}
+
+	p2 := 0
+	for _, n := range l1 {
+		p2 += n * count(l2, n)
+	}
+	fmt.Println(p1, p2)
 }

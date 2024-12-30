@@ -1,8 +1,10 @@
 package main
 
 import (
-	"aoc/lib/file"
+	"aoc/lib/input"
+	"bufio"
 	"fmt"
+	"slices"
 	"strings"
 )
 
@@ -24,20 +26,23 @@ func numCombinations(towels []string, design string, cache map[string]int) int {
 	return count
 }
 
+
+
 func main() {
-	fmt.Println()
-	t, d := file.ReadTwoParts("./input")
-	towels := strings.Split(t, ", ")
-	designs := strings.Split(d, "\n")
-	count := 0
-	cache := map[string]int{}
+	towels := []string{}
+	designs := []string{}
+	input.TwoParts(
+		func(s *bufio.Scanner) { towels = slices.Concat(towels, strings.Split(s.Text(), ", ")) },
+		func(s *bufio.Scanner) { designs = append(designs, s.Text()) })
+	p1 := 0
 	p2 := 0
+	cache := map[string]int{}
 	for _, design := range designs {
 		result := numCombinations(towels, design, cache)
 		if result > 0 {
-			count++
+			p1++
 			p2 += result
 		}
 	}
-	fmt.Println(count, p2)
+	fmt.Println(p1, p2)
 }

@@ -2,20 +2,21 @@ package main
 
 import (
 	"aoc/lib/collections/set"
-	"aoc/lib/file"
+	"aoc/lib/input"
+	"bufio"
 	"fmt"
 	"slices"
 	"strings"
 )
 
-func main() {
-	fmt.Println()
 
+
+func main() {
 	// network maps computer to all the computers it is connected to.
 	// We store each link, bidirectional
 	network := map[string]*set.Set[string]{}
-	for _, line := range strings.Split(file.Read(), "\n") {
-		c := strings.Split(line, "-")
+	input.Lines(func(s *bufio.Scanner) {
+		c := strings.Split(s.Text(), "-")
 		if _, ok := network[c[0]]; !ok {
 			network[c[0]] = set.New[string]()
 		}
@@ -24,7 +25,7 @@ func main() {
 			network[c[1]] = set.New[string]()
 		}
 		network[c[1]].Add(c[0])
-	}
+	})
 
 	sets := set.New[string]()
 
@@ -52,7 +53,5 @@ func main() {
 			}
 		}
 	}
-
-	// 2332 too high
 	fmt.Println(sets.Len())
 }

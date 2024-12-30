@@ -1,7 +1,6 @@
 package grid
 
 import (
-	"aoc/lib/file"
 	"fmt"
 	"strings"
 )
@@ -39,20 +38,6 @@ func (g Grid) AllNeighbours(numDirs, r, c int) [][2]int {
 		nbs = append(nbs, [2]int{rr, cc})
 	}
 	return nbs
-}
-
-type GridBuilder struct {
-	g Grid
-}
-
-func (b *GridBuilder) ProcessLine(i int, line string) {
-	b.g = append(b.g, []byte(line))
-}
-
-func FromFile(fn string) Grid {
-	b := &GridBuilder{}
-	file.ReadLines(fn, b)
-	return b.g
 }
 
 func FromString(sg string) Grid {

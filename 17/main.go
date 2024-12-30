@@ -1,9 +1,9 @@
 package main
 
 import (
+	"aoc/lib/input"
 	"aoc/lib/slice"
 	"fmt"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -72,13 +72,10 @@ func (p *Program) combo(operand int) int {
 
 func main() {
 	fmt.Println()
-	content, err := os.ReadFile("./input")
-	if err != nil {
-		panic("Cannot read file")
-	}
+	content := input.Blob()
 
 	re := regexp.MustCompile(`\d+`)
-	nums := slice.Map(slice.Int, re.FindAllString(string(content), -1))
+	nums := slice.Map(slice.Int, re.FindAllString(content, -1))
 
 	// --[ Part 1 ]--
 	prg := &Program{A: nums[0], B: nums[1], C: nums[2], ins: nums[3:]}

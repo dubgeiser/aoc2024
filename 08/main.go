@@ -3,21 +3,33 @@ package main
 import (
 	"aoc/lib/collections/set"
 	"aoc/lib/grid"
+	"aoc/lib/input"
 	"fmt"
 )
 
-type Solution struct {
-	g   grid.Grid
-	a2p map[byte][][2]int // antenna (char) -> [all positions it occurs]
+// Return a map: antenna (char) -> [all positions it occurs]
+func MapAntennas(g grid.Grid) map[byte][][2]int {
+	a2p := make(map[byte][][2]int)
+	for r, row := range g {
+		for c, ch := range row {
+			if ch != '.' {
+				if _, exists := a2p[ch]; !exists {
+					a2p[ch] = make([][2]int, 0)
+				}
+				p := [2]int{r, c}
+				a2p[ch] = append(a2p[ch], p)
+			}
+		}
+	}
+	return a2p
 }
 
-func (s *Solution) Solve() any {
+func main() {
+	g, R, C := input.Grid()
+	a2p := MapAntennas(g)
 	antinodes := set.New[[2]int]()
 	antinodes2 := set.New[[2]int]()
-	s.MapAntennas()
-	R := len(s.g)
-	C := len(s.g[0])
-	for _, pa := range s.a2p {
+	for _, pa := range a2p {
 		for i := 0; i < len(pa)-1; i++ {
 			for j := i + 1; j < len(pa); j++ {
 				r1 := pa[i][0]
@@ -54,28 +66,6 @@ func (s *Solution) Solve() any {
 			}
 		}
 	}
-	return [2]int{antinodes.Len(), antinodes2.Len()}
-}
-
-func (s *Solution) MapAntennas() {
-	s.a2p = make(map[byte][][2]int)
-	for r, row := range s.g {
-		for c, ch := range row {
-			if ch != '.' {
-				if _, exists := s.a2p[ch]; !exists {
-					s.a2p[ch] = make([][2]int, 0)
-				}
-				p := [2]int{r, c}
-				s.a2p[ch] = append(s.a2p[ch], p)
-			}
-		}
-	}
-}
-
-func main() {
-	s := &Solution{}
-	s.g = grid.FromFile("./input")
-
-	fmt.Println()
-	fmt.Println(s.Solve())
+	fmt.Println(antinodes.Len())
+	fmt.Println(antinodes2.Len())
 }

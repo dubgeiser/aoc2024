@@ -1,10 +1,11 @@
 package main
 
 import (
-	"aoc/lib/file"
 	"aoc/lib/grid"
+	"aoc/lib/input"
+	"bufio"
 	"fmt"
-	"strings"
+	"slices"
 )
 
 func findStart(g grid.Grid) (int, int) {
@@ -25,9 +26,11 @@ findstart:
 
 func main() {
 	fmt.Println()
-	g_, m_ := file.ReadTwoParts(file.Input())
-	m := []byte(strings.Replace(m_, "\n", "", -1))
-	g := grid.FromString(g_)
+	m := []byte{}
+	g := grid.Grid{}
+	input.TwoParts(
+		func(s *bufio.Scanner) { g = append(g, slices.Clone(s.Bytes())) },
+		func(s *bufio.Scanner) { m = slices.Concat(m, s.Bytes()) })
 	R := len(g)
 	C := len(g[0])
 	M := len(m)
@@ -83,6 +86,5 @@ func main() {
 			count += 100*r + c
 		}
 	}
-
 	fmt.Println(count)
 }

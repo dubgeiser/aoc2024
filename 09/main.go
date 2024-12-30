@@ -1,7 +1,8 @@
 package main
 
 import (
-	"aoc/lib/file"
+	"aoc/lib/input"
+	"bufio"
 	"fmt"
 	"slices"
 	"strconv"
@@ -20,9 +21,7 @@ type Solution struct {
 	id2pos map[int][2]int
 }
 
-func (s *Solution) ProcessLine(i int, line string) {
-	s.disk = make([]int, 0)
-	s.id2pos = make(map[int][2]int)
+func (s *Solution) ProcessLine(line string) {
 	fileId := 0
 	for i := 0; i < len(line); i++ {
 		n, _ := strconv.Atoi(string(line[i]))
@@ -127,11 +126,7 @@ func pr(disk []int) {
 }
 
 func main() {
-	s := &Solution{}
-	_, err := file.ReadLines("./input", s)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println()
+	s := &Solution{disk: make([]int, 0), id2pos: make(map[int][2]int)}
+	input.Lines(func(sc *bufio.Scanner) { s.ProcessLine(sc.Text()) })
 	fmt.Println(s.Solve())
 }

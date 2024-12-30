@@ -69,12 +69,4 @@ We could then have a snippet `loopgrid` that inserts the usual `for r:=0;r<R;r++
 Maybe even have methods `Rows()` and `Cols()` like iterators that guarantee the order like the "loop grid" construction.
 However, ATM, it feels that this can get hairy quite easily: Do you make them return the tile or the indices, for instance.  Both can come in handy, but maybe the indices are more in line with KISS as they easily can be used to access the grid via `g[r][c]`.
 
-### lib/file
-Should be going direction `lib/input` and have the func's for reading input.
-ATM `file.Read()` in combination with `Input()` seems a good start: It removes the filename from the compiled binary, so we can run the sanple- or input file against it as we see fit.
-Furthermore, it becomes easy in Vim to execute the program with any file, fi. by remapping `<Leader>t` on the fly or something along those lines...
-
-It could also hold often used constructs, ex. read a `[][]byte` grid, a list of integers, etc...
-
-
 <!-- vim: set spell: -->

@@ -2,40 +2,13 @@ package main
 
 import (
 	"aoc/lib/collections/set"
-	"aoc/lib/file"
+	"aoc/lib/input"
 	"aoc/lib/slice"
+	"bufio"
 	"fmt"
 	"slices"
 	"strings"
 )
-
-type Solution struct {
-	g          [][]int
-	trailHeads [][2]int
-}
-
-func (s *Solution) ProcessLine(i int, line string) {
-	s.g = append(s.g, slice.Map(slice.Int, strings.Split(line, "")))
-}
-
-func (s *Solution) Solve() any {
-	R := len(s.g)
-	C := len(s.g[0])
-	for r := 0; r < R; r++ {
-		for c := 0; c < C; c++ {
-			if s.g[r][c] == 0 {
-				s.trailHeads = append(s.trailHeads, [2]int{r, c})
-			}
-		}
-	}
-	p1 := 0
-	p2 := 0
-	for p := range slices.Values(s.trailHeads) {
-		p1 += CountUniqueEnds(s.g, p[0], p[1])
-		p2 += CountUniquePaths(s.g, p[0], p[1])
-	}
-	return [2]int{p1, p2}
-}
 
 // Based on BFS, Algo Book p. 556
 // Queue (fifo) is implemented with a slice
@@ -76,7 +49,7 @@ func CountUniquePaths(g [][]int, r, c int) int {
 				paths = append(paths, path)
 			}
 		}
-		for adj:=range slices.Values(Adjacents(g, curr[0], curr[1])) {
+		for adj := range slices.Values(Adjacents(g, curr[0], curr[1])) {
 			q = append(q, adj)
 		}
 		path = append(path, [2]int{curr[0], curr[1]})
@@ -114,11 +87,24 @@ func Contains(paths [][][2]int, path [][2]int) bool {
 }
 
 func main() {
-	s := &Solution{}
-	_, err := file.ReadLines("./input", s)
-	if err != nil {
-		panic(err)
+	g := [][]int{}
+	trailHeads := [][2]int{}
+	input.Lines(func(s *bufio.Scanner) {
+		g = append(g, slice.Map(slice.Int,strings.Split(s.Text(), "")))
+	})
+	R := len(g)
+	C := len(g[0])
+	for r := 0; r < R; r++ {
+		for c := 0; c < C; c++ {
+			if g[r][c] == 0 {
+				trailHeads = append(trailHeads, [2]int{r, c})
+			}
+		}
 	}
-	fmt.Println()
-	fmt.Println(s.Solve())
+	p1, p2 := 0, 0
+	for _, p := range trailHeads {
+		p1 += CountUniqueEnds(g, p[0], p[1])
+		p2 += CountUniquePaths(g, p[0], p[1])
+	}
+	fmt.Println(p1, p2)
 }
