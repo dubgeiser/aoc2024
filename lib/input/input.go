@@ -13,12 +13,14 @@ import (
 // Scan the input line per line, each time a new line is scanned, pass the
 // scanner to the line processor, so it can scan the current line as it see fit.
 func Lines(processor func(s *bufio.Scanner)) {
-	in := input()
+	in, err := input()
 	defer in.Close()
+	exitOnErr(err)
 	scanner := bufio.NewScanner(in)
 	for scanner.Scan() {
 		processor(scanner)
 	}
+	exitOnErr(scanner.Err())
 }
 
 // Return the input as a Grid and its size.
@@ -67,36 +69,43 @@ func Blocks(processor func(s string)) {
 	processor(strings.TrimSpace(block.String()))
 }
 
-// Return the input as one blob.
-// Trim any space pre- or succeeding the content.
+// Return the input as one blob of type `string`.
+// Trim any space pre- or succeeding the content, but preserve other new lines.
 func Blob() string {
-	in := input()
+	in, err := input()
 	defer in.Close()
+	exitOnErr(err)
 	raw, err := os.ReadFile(in.Name())
-	if err != nil {
-		panic(err)
-	}
+	exitOnErr(err)
 	return strings.TrimSpace(string(raw))
+}
+
+// Exit the program if `err` is an error
+func exitOnErr(err error) {
+	if err == nil {
+		return
+	}
+	fmt.Fprintf(os.Stderr, "AOC: INPUT ERROR: %s\n", err.Error())
+	os.Exit(1)
 }
 
 // Determine the input for a puzzle.
 // For determining which input to read, following rules apply:
-// If there's input on STDIN, read it,
-// else if there's a filename supplied, read that
-// else read from default file named `input`
 //
-// Note that this will return a file pointer and it is up to the user code to
-// cleanup / Close() it!
-// For this reason, we keep this function local to the package.
-func input() *os.File {
+//   - If there's input on STDIN, read it,
+//   - else if there's a filename supplied, read that
+//   - else read from default file named `input`
+//
+// It's the user responsibility to handle possible returned `error`s
+func input() (*os.File, error) {
 	stat, err := os.Stdin.Stat()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	// On Mac this detect STDIN whether using `cat FILE |`
 	// or `go run main.go < FILE`
 	if (stat.Mode() & os.ModeCharDevice) == 0 {
-		return os.Stdin
+		return os.Stdin, nil
 	}
 	fn := "input"
 	if len(os.Args) > 1 {
@@ -104,7 +113,7 @@ func input() *os.File {
 	}
 	file, err := os.Open(fn)
 	if err != nil {
-		panic(fmt.Sprintf("Cannot read file [%s]:\n%s", fn, err.Error()))
+		return nil, err
 	}
-	return file
+	return file, nil
 }
