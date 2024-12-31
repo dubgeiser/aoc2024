@@ -40,6 +40,19 @@ func (g Grid) AllNeighbours(numDirs, r, c int) [][2]int {
 	return nbs
 }
 
+func (g Grid) Copy() Grid {
+	gg := Grid{}
+	R, C := len(g), len(g[0])
+	for r := 0; r < R; r++ {
+		row := []byte{}
+		for c := 0; c < C; c++ {
+			row = append(row, g[r][c])
+		}
+		gg = append(gg, row)
+	}
+	return gg
+}
+
 func FromString(sg string) Grid {
 	g := [][]byte{}
 	for _, line := range strings.Split(sg, "\n") {
