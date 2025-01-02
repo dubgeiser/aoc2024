@@ -54,6 +54,8 @@ In the end I looked up a video about solving this and came across the "combinati
 
 Luckily, all this made part2 a breeze.
 
+## Day 18, part 2
+Part 2 is a slow (seconds) and could probably made (a bit?) faster by taking a bisecting approach to going through the falling bytes.
 
 ## TODO
 ### lib/grid

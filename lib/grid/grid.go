@@ -23,10 +23,14 @@ func New(R, C int, v byte) Grid {
 	return g
 }
 
-func (g Grid) Mark(pos [][2]int, ch byte) {
+func (g Grid) MarkAll(pos [][2]int, ch byte) {
 	for i:=0;i<len(pos);i++{
-		g[pos[i][0]][pos[i][1]] = ch
+		g.Mark(pos[i], ch)
 	}
+}
+
+func (g Grid) Mark(p [2]int, ch byte) {
+	g[p[0]][p[1]] = ch
 }
 
 // Return the neighbours in the grid for a given position `r,c`
