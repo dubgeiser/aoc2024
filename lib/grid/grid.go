@@ -12,6 +12,23 @@ var DIRS = map[int][][2]int{
 	8: {{0, -1}, {0, 1}, {1, 0}, {1, -1}, {1, 1}, {-1, 0}, {-1, -1}, {-1, 1}},
 }
 
+func New(R, C int, v byte) Grid {
+	g := Grid{}
+	for r:= 0; r < R; r++ {
+		g = append(g, []byte{})
+		for c:= 0; c < C; c++ {
+			g[r] = append(g[r], v)
+		}
+	}
+	return g
+}
+
+func (g Grid) Mark(pos [][2]int, ch byte) {
+	for i:=0;i<len(pos);i++{
+		g[pos[i][0]][pos[i][1]] = ch
+	}
+}
+
 // Return the neighbours in the grid for a given position `r,c`
 // Only return in-bounds positions for which `fn(r,c)` is `true`
 func (g Grid) Neighbours(numDirs, r, c int, fn func(row, col int) bool) [][2]int {
