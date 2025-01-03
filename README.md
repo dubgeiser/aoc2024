@@ -56,6 +56,7 @@ Luckily, all this made part2 a breeze.
 
 ## Day 18, part 2
 Part 2 is a slow (seconds) and could probably made (a bit?) faster by taking a bisecting approach to going through the falling bytes.
+And it _should_ work by going backwards through the falling corrupting bytes.
 
 ## TODO
 ### lib/grid
